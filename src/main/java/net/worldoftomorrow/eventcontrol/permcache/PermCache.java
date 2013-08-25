@@ -7,11 +7,11 @@ import net.worldoftomorrow.eventcontrol.PlayerUtil;
 
 import org.bukkit.entity.Player;
 
-public class Cache {
+public class PermCache {
 	
 	private final Map<String, Map<String, Boolean>> players = new HashMap<String, Map<String, Boolean>>();
 	
-	public Cache() {
+	public PermCache() {
 	}
 	
 	/**

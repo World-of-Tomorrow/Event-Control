@@ -8,19 +8,19 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class CacheListener implements Listener {
 	
-	private final Cache cache;
+	private final PermCache permCache;
 	
-	public CacheListener(Cache cache) {
-		this.cache = cache;
+	public CacheListener(PermCache permCache) {
+		this.permCache = permCache;
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onJoin(PlayerJoinEvent event) {
-		cache.updatePlayer(event.getPlayer());
+		permCache.updatePlayer(event.getPlayer());
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onQuit(PlayerQuitEvent e) {
-		cache.removePlayer(e.getPlayer());
+		permCache.removePlayer(e.getPlayer());
 	}
 }

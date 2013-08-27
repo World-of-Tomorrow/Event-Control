@@ -1,0 +1,8 @@
+name: Event Control
+version: ${project.version}-${BUILD_NUMBER}
+website: http://dev.bukkit.org/server-mods/noitem/
+description: Event Control plugin designed to replace NoItem
+authors: [nala3]
+
+main: net.worldoftomorrow.eventcontrol.EventControl
+database: false

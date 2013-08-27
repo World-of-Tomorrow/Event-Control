@@ -6,12 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 
 public class I18n {
@@ -36,13 +35,11 @@ public class I18n {
 	 * @param f
 	 * @return immutable map of values
 	 */
-	
-	@SuppressWarnings("unchecked")
 	private Map<String, String> loadValues(File f) {
 		if(Validate.isValidFile(f)) {
 			return Collections.unmodifiableMap(this.mapValues(f));
 		} else {
-			EventControl.instance().getLogger().severe("Could not load language file, defaulting to en_US");
+			EventControl.instance().getLogger().warning("Could not load language file, defaulting to en_US");
 			return Collections.unmodifiableMap(this.mapValues(this.copyDefaultFile()));
 		}
 	}
@@ -70,9 +67,11 @@ public class I18n {
 		FileOutputStream fos;
 		try {
 			if(!dest.exists()) {
+				dest.getParentFile().mkdirs();
 				dest.createNewFile();
 				fos = new FileOutputStream(dest);
-				IOUtils.copy(EventControl.instance().getResource("/local/en_US"), fos);
+				//IOUtils.copy(EventControl.instance().getResource("local/en_US"), fos);
+				IOUtils.copy(this.getClass().getResourceAsStream("/lang/en_US"), fos);
 				fos.close();
 			}
 			return dest;

@@ -38,7 +38,7 @@ public class EventControl extends JavaPlugin {
 	}
 	
 	public File geti18nFolder() {
-		return new File(this.getDataFolder() + File.separator + "local");
+		return new File(this.getDataFolder() + File.separator + "lang");
 	}
 	
 	private void setConfigDefaults() {

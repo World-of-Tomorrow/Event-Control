@@ -20,7 +20,7 @@ public class I18n {
 	private final Map<String, String> values;
 	
 	public I18n(String lang) {
-		File langfile = ResourceManager.geti18nFile(lang);
+		File langfile = this.geti18nFile(lang);
 		values = loadValues(langfile);
 	}
 	
@@ -81,5 +81,16 @@ public class I18n {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private File geti18nFile(String language) {
+		String path = EventControl.instance().getDataFolder().getPath() +
+				File.separator + "lang" + File.separator + language;
+		File langfile = new File(path);
+		if(Validate.isValidFile(langfile)) {
+			return langfile;
+		} else {
+			return null;
+		}
 	}
 }

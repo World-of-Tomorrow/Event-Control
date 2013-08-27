@@ -42,8 +42,8 @@ public class I18n {
 		if(Validate.isValidFile(f)) {
 			return Collections.unmodifiableMap(this.mapValues(f));
 		} else {
+			EventControl.instance().getLogger().severe("Could not load language file, defaulting to en_US");
 			return Collections.unmodifiableMap(this.mapValues(this.copyDefaultFile()));
-			//TODO: load default language (en_US) & Warn of this action
 		}
 	}
 	

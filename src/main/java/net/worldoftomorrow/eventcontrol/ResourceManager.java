@@ -13,7 +13,6 @@ public class ResourceManager {
 		if(Validate.isValidFile(langfile)) {
 			return langfile;
 		} else {
-			// TODO: Log the error
 			return null;
 		}
 	}

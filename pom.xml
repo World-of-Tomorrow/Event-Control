@@ -59,6 +59,7 @@
 			<resource>
 				<includes>
 					<include>plugin.yml</include>
+					<include>lang/en_US</include>
 				</includes>
 				<directory>${basedir}/resources/</directory>
 				<filtering>true</filtering>

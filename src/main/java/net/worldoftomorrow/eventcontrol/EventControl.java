@@ -13,8 +13,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class EventControl extends JavaPlugin {
 	
 	private static EventControl instance;
-	private final PermCache permCache = new PermCache();
+	public final PermCache permCache = new PermCache();
 	private I18n local;
+	
+	public static final String BASE_PERM = "ec.";
 	
 	@Override
 	public void onEnable() {

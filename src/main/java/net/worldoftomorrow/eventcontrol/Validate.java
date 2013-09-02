@@ -14,4 +14,8 @@ public class Validate {
 	public static boolean notNull(Object o) {
 		return !(o == null);
 	}
+	
+	public static boolean isValidJar(File f) {
+		return isValidFile(f) && f.getName().equals(".jar");
+	}
 }

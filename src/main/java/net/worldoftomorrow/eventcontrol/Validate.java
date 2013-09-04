@@ -16,6 +16,6 @@ public class Validate {
 	}
 	
 	public static boolean isValidJar(File f) {
-		return isValidFile(f) && f.getName().equals(".jar");
+		return isValidFile(f) && f.getName().endsWith(".jar");
 	}
 }

@@ -3,15 +3,12 @@ package net.worldoftomorrow.eventcontrol.listeners;
 import net.worldoftomorrow.eventcontrol.EventControl;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 
 public abstract class ECListener implements Listener {
-	public final Event regEvent;
 	public final String permNode;
 	
-	public ECListener(Event e, String permNode) {
-		this.regEvent = e;
+	public ECListener(String permNode) {
 		this.permNode = EventControl.BASE_PERM + permNode + ".";
 	}
 	

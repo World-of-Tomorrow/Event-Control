@@ -48,6 +48,7 @@ public class ListenerLoader {
 		for(File f : listenerFolder.listFiles()) {
 			if(Validate.isValidJar(f)) {
 				jars.add(f);
+			} else {
 			}
 		}
 	}
@@ -61,7 +62,7 @@ public class ListenerLoader {
 				e.printStackTrace();
 			}
 		}
-		return new URLClassLoader(urls.toArray(new URL[urls.size()]));
+		return new URLClassLoader(urls.toArray(new URL[urls.size()]), EventControl.class.getClassLoader());
 	}
 	
 	private List<Class<ECListener>> getListeners() {
@@ -109,7 +110,9 @@ public class ListenerLoader {
 	private void instanceListeners() {
 		List<Class<ECListener>> listeners = getListeners();
 		for(Class<ECListener> listener : listeners) {
-			if(listener == null) continue;
+			if(listener == null) {
+				continue;
+			}
 			try {
 				// All ECListeners should not need constructor arguments, this should be
 				// take care of by using super(Event, String);

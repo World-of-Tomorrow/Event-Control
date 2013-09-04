@@ -53,7 +53,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<defaultGoal>clean compile package</defaultGoal>
+		<defaultGoal>clean compile package install</defaultGoal>
 		<sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
 		<resources>
 			<resource>

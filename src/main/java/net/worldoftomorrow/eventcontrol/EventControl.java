@@ -3,6 +3,7 @@ package net.worldoftomorrow.eventcontrol;
 import java.io.File;
 import java.util.logging.Level;
 
+import net.worldoftomorrow.eventcontrol.listeners.ListenerLoader;
 import net.worldoftomorrow.eventcontrol.permcache.PermCache;
 import net.worldoftomorrow.eventcontrol.permcache.CacheListener;
 
@@ -14,6 +15,7 @@ public class EventControl extends JavaPlugin {
 	
 	private static EventControl instance;
 	public final PermCache permCache = new PermCache();
+	private ListenerLoader listenerLoader;
 	private I18n local;
 	
 	public static final String BASE_PERM = "ec.";
@@ -33,6 +35,8 @@ public class EventControl extends JavaPlugin {
 		PluginManager pm = this.getServer().getPluginManager();
 		// Register Cache listener.
 		pm.registerEvents(new CacheListener(permCache), this);
+		// Load Listeners
+		this.listenerLoader = new ListenerLoader();
 	}
 	
 	public static EventControl instance() {

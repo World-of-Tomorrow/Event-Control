@@ -3,6 +3,7 @@ package net.worldoftomorrow.eventcontrol.permcache;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.worldoftomorrow.eventcontrol.EventControl;
 import net.worldoftomorrow.eventcontrol.PlayerUtil;
 
 import org.bukkit.entity.Player;
@@ -56,5 +57,11 @@ public class PermCache {
 	
 	public Map<String, Boolean> getPermissionsSet(Player p) {
 		return players.get(p);
+	}
+	
+	public void reloadCache() {
+		for(Player p : EventControl.instance().getServer().getOnlinePlayers()) {
+			this.updatePlayer(p);
+		}
 	}
 }

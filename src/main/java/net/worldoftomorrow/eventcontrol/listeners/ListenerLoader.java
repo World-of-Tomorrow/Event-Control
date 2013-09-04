@@ -2,19 +2,17 @@ package net.worldoftomorrow.eventcontrol.listeners;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 
 import net.worldoftomorrow.eventcontrol.EventControl;
@@ -23,81 +21,105 @@ import net.worldoftomorrow.eventcontrol.Validate;
 public class ListenerLoader {
 	
 	private final EventControl instance = EventControl.instance();
-	private List<ECListener> listeners = new ArrayList<ECListener>();
 	private final File listenerFolder = new File(instance.getDataFolder() + "/listeners");
+	
+	private List<ECListener> listeners = new ArrayList<ECListener>();
+	private List<File> jars = new ArrayList<File>();
+	
+	private URLClassLoader classLoader;
 	
 	public ListenerLoader() {
 		if(!listenerFolder.exists()) listenerFolder.mkdir();
+		this.loadJars(); // Get the jars to be loaded
+		this.classLoader = this.createClassLoader(); // Create the class loader
+		this.instanceListeners();
+		this.registerListeners();
 	}
 	
-	public void registerListeners() {
+	private void registerListeners() {
 		PluginManager pm = EventControl.instance().getServer().getPluginManager();
 		EventControl instance = EventControl.instance();
 		for(ECListener l : listeners) {
 			pm.registerEvents(l, instance);
 		}
 	}
-	
-	public void loadListeners() {
-		File lisFolder = new File(EventControl.instance().getDataFolder() + "/listeners");
-		if(!Validate.isValidDir(lisFolder)) {
-			EventControl.instance().getLogger().severe("Listener folder is not valid!");
-			return;
-		}
-		List<URL> urls = new ArrayList<URL>();
-		// Get the URL for each jar containing feature(s)
-		for(File f : lisFolder.listFiles()) {
-			if(Validate.isValidFile(f) && f.getName().endsWith(".jar")) {
-				try {
-					urls.add(f.toURI().toURL());
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		URLClassLoader urlcl = new URLClassLoader((URL[]) urls.toArray());
-		Enumeration<URL> lisfiles;
-		try {
-			lisfiles = urlcl.getResources("listeners.txt");
-		} catch (IOException e) {
-			EventControl.instance().getLogger().severe("Could not load listeners files!");
-			e.printStackTrace();
-			return;
-		}
-		
-		while(lisfiles.hasMoreElements()) {
-			FileInputStream fis;
-			try {
-				fis = new FileInputStream(lisfiles.nextElement().getFile());
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				continue;
-			}
-			BufferedReader br = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
-			String line;
-			try {
-				while((line = br.readLine()) != null) {
-					urlcl.loadClass(line).getConstructor(Event.class, String.class);
-				}
-			} catch (IOException | ClassNotFoundException | NoSuchMethodException | SecurityException e) {
-				e.printStackTrace();
+
+	private void loadJars() {
+		for(File f : listenerFolder.listFiles()) {
+			if(Validate.isValidJar(f)) {
+				jars.add(f);
 			}
 		}
 	}
 	
-	public URL[] getListenerURLs() {
-		List<URL> urls =  new ArrayList<URL>();
-		for (File jar : listenerFolder.listFiles()) {
+	private URLClassLoader createClassLoader() {
+		List<URL> urls = new ArrayList<URL>();
+		for(File jar : jars) {
 			try {
-				if(Validate.isValidJar(jar)) {
-					urls.add(jar.toURI().toURL());
-				}
+				urls.add(jar.toURI().toURL());
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
 		}
-		return urls.toArray(new URL[urls.size()]);
+		return new URLClassLoader(urls.toArray(new URL[urls.size()]));
 	}
 	
+	private List<Class<ECListener>> getListeners() {
+		List<Class<ECListener>> listeners = new ArrayList<Class<ECListener>>();
+		for(String listenerName : getListenersToLoad()) {
+			Class<ECListener> listener = getListener(listenerName);
+			if(listener != null) listeners.add(listener);
+		}
+		return listeners;
+	}
 	
+	@SuppressWarnings("unchecked")
+	private Class<ECListener> getListener(String name) {
+		try {
+			Class<?> clazz = classLoader.loadClass(name);
+			if(clazz.isAssignableFrom(clazz)) {
+				return (Class<ECListener>) clazz;
+			}
+			return null;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private String[] getListenersToLoad() {
+		List<String> toLoad = new ArrayList<String>();
+		try {
+			Enumeration<URL> listenerFiles = classLoader.findResources("listeners.txt");
+			while(listenerFiles.hasMoreElements()) {
+				BufferedReader in = new BufferedReader(
+						new InputStreamReader(listenerFiles.nextElement().openStream()));
+				String line;
+				while((line = in.readLine()) != null) {
+					toLoad.add(line);
+				}
+				in.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return toLoad.toArray(new String[toLoad.size()]);
+	}
+	
+	private void instanceListeners() {
+		List<Class<ECListener>> listeners = getListeners();
+		for(Class<ECListener> listener : listeners) {
+			if(listener == null) continue;
+			try {
+				// All ECListeners should not need constructor arguments, this should be
+				// take care of by using super(Event, String);
+				Constructor<? extends ECListener> con = listener.getConstructor();
+				this.listeners.add(con.newInstance());
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | 
+					IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				// Catch ALL the exception!
+				e.printStackTrace();
+			}
+		}
+	}
 }

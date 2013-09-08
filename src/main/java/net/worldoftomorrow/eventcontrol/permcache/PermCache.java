@@ -37,6 +37,11 @@ public class PermCache {
 	
 	public boolean hasPermission(Player p, String perm) {
 		Map<String, Boolean> permset = this.getPermissionsSet(p);
+		
+		// If the player is not yet in the cache, use regular methods
+		// This is an attempt to work around checking on PlayerJoinEvent
+		if(permset == null) return p.hasPermission(perm);
+		
 		if(permset.containsKey(perm)) {
 			return permset.get(perm);
 		} else {
@@ -46,6 +51,11 @@ public class PermCache {
 	
 	public boolean isPermissionFalse(Player p, String perm) {
 		Map<String, Boolean> permset = this.getPermissionsSet(p);
+		
+		// If the player is not yet in the cache, use regular methods
+		// This is an attempt to work around checking on PlayerJoinEvent
+		if(permset == null) return p.hasPermission(perm);
+		
 		if(permset.containsKey(perm)) {
 			// If the permission is set FALSE return TRUE
 			return !permset.get(perm);
@@ -56,7 +66,7 @@ public class PermCache {
 	}
 	
 	public Map<String, Boolean> getPermissionsSet(Player p) {
-		return players.get(p);
+		return players.get(p.getName());
 	}
 	
 	public void reloadCache() {

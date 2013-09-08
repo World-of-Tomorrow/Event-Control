@@ -4,7 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class CacheListener implements Listener {
@@ -16,7 +16,7 @@ public class CacheListener implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onJoin(PlayerJoinEvent event) {
+	public void onJoin(PlayerLoginEvent event) {
 		permCache.updatePlayer(event.getPlayer());
 	}
 	

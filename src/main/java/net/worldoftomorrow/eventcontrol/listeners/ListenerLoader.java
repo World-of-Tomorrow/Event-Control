@@ -48,7 +48,6 @@ public class ListenerLoader {
 		for(File f : listenerFolder.listFiles()) {
 			if(Validate.isValidJar(f)) {
 				jars.add(f);
-			} else {
 			}
 		}
 	}
